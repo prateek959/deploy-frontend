@@ -2,7 +2,6 @@ import React from 'react';
 import { FormControl } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
-import "./styles.css";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import { useEffect, useState } from "react";
@@ -16,7 +15,9 @@ import animationData from "../animations/typing.json";
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
-const ENDPOINT = "https://deployapi-ub0q.onrender.com/"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+import { toast } from 'react-toastify'; // Importing toastify
+
+const ENDPOINT = "https://deployapi-ub0q.onrender.com/";
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -60,14 +61,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
-      toast({
-        title: "Error Occured!",
-        description: "Failed to Load the Messages",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast.error("Failed to Load the Messages");
     }
   };
 
@@ -93,17 +87,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (error) {
-        toast({
-          title: "Error Occured!",
-          description: "Failed to send the Message",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+        toast.error("Failed to send the Message");
       }
     }
   };
+
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
       socket.emit("stop typing", selectedChat._id);
@@ -130,14 +118,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (error) {
-        toast({
-          title: "Error Occurred!",
-          description: "Failed to send the Message",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+        toast.error("Failed to send the Message");
       }
     }
   };
@@ -162,7 +143,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
       if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
+        !selectedChatCompare || 
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         if (!notification.includes(newMessageRecieved)) {
@@ -255,38 +236,36 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
-<FormControl id="first-name" isRequired mt={3}>
-  {istyping && (
-    <div>
-      <Lottie
-        options={defaultOptions}
-        width={70}
-        style={{ marginBottom: 15, marginLeft: 0 }}
-      />
-    </div>
-  )}
-  <Box display="flex" alignItems="center" gap="2">
-    <Input
-      variant="filled"
-      bg="#E0E0E0"
-      placeholder="Enter a message.."
-      value={newMessage}
-      onChange={typingHandler}
-    />
-    <IconButton
-      colorScheme="blue"
-      aria-label="Send message"
-      icon={<ArrowBackIcon transform="rotate(90deg)" />}
-      onClick={handleSendMessage}
-      isDisabled={!newMessage.trim()}
-    />
-  </Box>
-</FormControl>
-
+            <FormControl id="first-name" isRequired mt={3}>
+              {istyping && (
+                <div>
+                  <Lottie
+                    options={defaultOptions}
+                    width={70}
+                    style={{ marginBottom: 15, marginLeft: 0 }}
+                  />
+                </div>
+              )}
+              <Box display="flex" alignItems="center" gap="2">
+                <Input
+                  variant="filled"
+                  bg="#E0E0E0"
+                  placeholder="Enter a message.."
+                  value={newMessage}
+                  onChange={typingHandler}
+                />
+                <IconButton
+                  colorScheme="blue"
+                  aria-label="Send message"
+                  icon={<ArrowBackIcon transform="rotate(90deg)" />}
+                  onClick={handleSendMessage}
+                  isDisabled={!newMessage.trim()}
+                />
+              </Box>
+            </FormControl>
           </Box>
         </>
       ) : (
-        // to get socket.io on same page
         <Box display="flex" alignItems="center" justifyContent="center" h="100%">
           <Text fontSize="3xl" pb={3} fontFamily="Work sans">
             Click on a user to start chatting

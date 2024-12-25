@@ -22,8 +22,9 @@ import { Input } from "@chakra-ui/input";
 import { useToast } from "@chakra-ui/toast";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
-import NotificationBadge from "react-notification-badge";
-import { Effect } from "react-notification-badge";
+// Import react-toastify
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // CSS for toastify
 import ChatLoading from "../ChatLoading";
 import { Spinner } from "@chakra-ui/spinner";
 import ProfileModal from "./ProfileModal";
@@ -121,7 +122,6 @@ function SideDrawer() {
         w="100%"
         p="5px 10px 5px 10px"
         borderWidth="5px"
-       
       >
         <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
@@ -137,11 +137,22 @@ function SideDrawer() {
         <div>
           <Menu>
             <MenuButton p={1}>
-              <NotificationBadge
-                count={notification.length}
-                effect={Effect.SCALE}
-              />
+              {/* Replaced react-notification-badge with react-toastify */}
               <BellIcon fontSize="2xl" m={1} />
+              {notification.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                  background: 'red',
+                  borderRadius: '50%',
+                  padding: '0 6px',
+                  color: 'white',
+                  fontSize: '12px',
+                }}>
+                  {notification.length}
+                </div>
+              )}
             </MenuButton>
             <MenuList pl={2}>
               {!notification.length && "No New Messages"}
@@ -214,6 +225,9 @@ function SideDrawer() {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+
+      {/* Toast container to display notifications */}
+      <ToastContainer />
     </>
   );
 }
