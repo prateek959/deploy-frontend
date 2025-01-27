@@ -26,7 +26,7 @@ const ChatProvider = ({ children }) => {
 
   const fetchChats = async (token) => {
     try {
-      const response = await axios.get("https://deployapi-ub0q.onrender.com/api/chat", {
+      const response = await axios.get("https://deployapi-ub0q.onrender.com/api/chat/", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
